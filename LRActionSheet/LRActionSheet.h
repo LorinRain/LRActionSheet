@@ -17,7 +17,7 @@
  * @brief 按钮点击事件
  * 按钮点击的时候，提示框自动消失
  */
-- (void)actionSheet:(LRActionSheet *)actionSheet buttonClickedAtIndex:(NSInteger)index;
+- (void)actionSheet:(nonnull LRActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)index;
 
 @end
 
@@ -25,19 +25,31 @@
 @interface LRActionSheet : UIView
 
 ///毁灭性按钮的index
-@property (nonatomic) NSInteger destructiveButtonIndex;
+@property (nonatomic, readonly) NSInteger destructiveButtonIndex;
+
+///actionSheet标题
+@property (nullable, nonatomic, copy, readonly) NSString *title;
 
 ///代理
-@property (nonatomic, assign) id<LRActionSheetDelegate>delegate;
+@property (nullable, nonatomic, assign) id<LRActionSheetDelegate>delegate;
 
 /*
  * 初始化方法
  * @brief 初始的时候指定标题以及按钮
  * @param others传入一个数组，数组内容为NSString
  */
-- (instancetype)initWithTitle:(NSString *)title destroyButtonTitle:(NSString *)destroyTitle otherButtonTitles:(NSArray *)others;
+- (nonnull instancetype)initWithTitle:(nullable NSString *)title destroyButtonTitle:(nullable NSString *)destroyTitle otherButtonTitles:(nullable NSArray *)others;
 
 ///显示
 - (void)show;
+
+/**
+ *  actionSheet对应行的标题
+ *
+ *  @param index 行
+ *
+ *  @return 标题
+ */
+- (nullable NSString *)buttonTitleAtIndex:(NSInteger)index;
 
 @end
