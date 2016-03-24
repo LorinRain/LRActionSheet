@@ -5,7 +5,7 @@
 
 Installation
 ==============
-Drag file `LRActionSheet` folder to your project(suppot images are in `Supporting Files` -> `images`)
+Drag `LRActionSheet` folder to your project(suppot images are in `Supporting Files` -> `images`)
 
 Usage
 ==============
