@@ -5,7 +5,7 @@
 
 Installation
 ==============
-Drag `LRActionSheet` folder to your project(suppot images are in `Supporting Files` -> `images`)
+Drag `LRActionSheet` folder to your project, just `#import "LRActionSheet.h"` when usage
 
 Usage
 ==============
