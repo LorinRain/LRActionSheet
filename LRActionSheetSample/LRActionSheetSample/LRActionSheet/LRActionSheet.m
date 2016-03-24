@@ -23,6 +23,10 @@
     UIView *actionSheetTopView;
     ///弹出框下半部分
     UIView *actionSheetBottomView;
+    ///记录title的数组
+    NSMutableArray *titlesArray;
+    ///毁灭性的按钮的标题
+    NSString * _Nullable destroyButtonTitle;
 }
 
 - (instancetype)initWithTitle:(NSString *)title destroyButtonTitle:(NSString *)destroyTitle otherButtonTitles:(NSArray *)others
@@ -45,6 +49,9 @@
         actionSheetView = [[UIView alloc] init];
         actionSheetView.backgroundColor = RGBCOLOR(230, 230, 230);
         actionSheetView.userInteractionEnabled = YES;
+        // 弹出框非交互区域添加事件，防止触发self的tap事件
+        UITapGestureRecognizer *actionSheetTap = [[UITapGestureRecognizer alloc] init];
+        [actionSheetView addGestureRecognizer: actionSheetTap];
         // 添加动画
         CATransition *animation = [CATransition animation];
         animation.duration = 0.2;
@@ -52,42 +59,54 @@
         animation.subtype = kCATransitionFromTop;
         [actionSheetView.layer addAnimation: animation forKey: nil];
         [self addSubview: actionSheetView];
+        // title数组
+        titlesArray = [NSMutableArray array];
         // 弹出框上面添加两部分view
-        actionSheetTopView = [[UIView alloc] init];
-        actionSheetTopView.frame = CGRectMake(0, 0, SCREENSIZE.width, 45);
-        [actionSheetView addSubview: actionSheetTopView];
+        if(title != nil && ![title isEqual: @""]) {
+            actionSheetTopView = [[UIView alloc] init];
+            actionSheetTopView.frame = CGRectMake(0, 0, SCREENSIZE.width, 45);
+            [actionSheetView addSubview: actionSheetTopView];
+            
+            // 往上半部分视图上添加标题和取消按钮
+            _title = title;
+            UILabel *titleLabel = [[UILabel alloc] init];
+            titleLabel.text = title;
+            titleLabel.textColor = RGBCOLOR(65, 65, 65);
+            titleLabel.font = [UIFont systemFontOfSize: 12.f];
+            titleLabel.frame = CGRectMake(0, 0, actionSheetTopView.frame.size.width, actionSheetTopView.frame.size.height);
+            titleLabel.textAlignment = NSTextAlignmentCenter;
+            [actionSheetTopView addSubview: titleLabel];
+            
+            // 取消按钮
+            UIButton *btnCancel = [UIButton buttonWithType: UIButtonTypeCustom];
+            //[btnCancel setBackgroundImage: [UIImage imageNamed: @"btn_menu_titile_p.png"] forState: UIControlStateNormal];
+            btnCancel.backgroundColor = RGBCOLOR(222, 222, 222);
+            btnCancel.layer.cornerRadius = 2;
+            btnCancel.layer.masksToBounds = YES;
+            btnCancel.layer.borderColor = RGBCOLOR(211, 211, 211).CGColor;
+            btnCancel.layer.borderWidth = 0.5;
+            btnCancel.frame = CGRectMake(actionSheetTopView.frame.size.width - 5 - 47, 10, 47, 45 - 20);
+            [btnCancel setTitle: @"取消" forState: UIControlStateNormal];
+            [btnCancel setTitleColor: RGBCOLOR(65, 65, 65) forState: UIControlStateNormal];
+            btnCancel.titleLabel.font = [UIFont systemFontOfSize: 12];
+            [btnCancel addTarget: self action: @selector(hide) forControlEvents: UIControlEventTouchUpInside];
+            [actionSheetTopView addSubview: btnCancel];
+            
+            // 添加上下分割线
+            UIImageView *line = [[UIImageView alloc] init];
+            line.backgroundColor = RGBCOLOR(211, 211, 211);
+            line.frame = CGRectMake(0, 45, SCREENSIZE.width, 1);
+            [actionSheetView addSubview: line];
+        }
         
         actionSheetBottomView = [[UIView alloc] init];
         CGFloat height = destroyTitle?(others.count+1)*45+(others.count)*BUTTONMAGIN+BUTTONMAGIN*2:others.count*45+(others.count-1)*BUTTONMAGIN+BUTTONMAGIN*2;
-        actionSheetBottomView.frame = CGRectMake(0, 46, SCREENSIZE.width, height);
+        actionSheetBottomView.frame = CGRectMake(0, actionSheetTopView==nil?0:46, SCREENSIZE.width, height);
         [actionSheetView addSubview: actionSheetBottomView];
-        
-        // 往上半部分视图上添加标题和取消按钮
-        UILabel *titleLabel = [[UILabel alloc] init];
-        titleLabel.text = title;
-        titleLabel.textColor = RGBCOLOR(65, 65, 65);
-        titleLabel.font = [UIFont systemFontOfSize: 12.f];
-        titleLabel.frame = CGRectMake(0, 0, actionSheetTopView.frame.size.width, actionSheetTopView.frame.size.height);
-        titleLabel.textAlignment = NSTextAlignmentCenter;
-        [actionSheetTopView addSubview: titleLabel];
-        //titleLabel.backgroundColor = [UIColor redColor];
-        // 取消按钮
-        UIButton *btnCancel = [UIButton buttonWithType: UIButtonTypeCustom];
-        [btnCancel setBackgroundImage: [UIImage imageNamed: @"btn_menu_titile_p.png"] forState: UIControlStateNormal];
-        btnCancel.frame = CGRectMake(actionSheetTopView.frame.size.width - 5 - 47, 5, 47, 45 - 10);
-        [btnCancel setTitle: @"取消" forState: UIControlStateNormal];
-        [btnCancel setTitleColor: RGBCOLOR(65, 65, 65) forState: UIControlStateNormal];
-        btnCancel.titleLabel.font = [UIFont systemFontOfSize: 12];
-        [btnCancel addTarget: self action: @selector(hide) forControlEvents: UIControlEventTouchUpInside];
-        [actionSheetTopView addSubview: btnCancel];
-        
-        // 添加上下分割线
-        UIImageView *line = [[UIImageView alloc] initWithImage: [UIImage imageNamed: @"line.png"]];
-        line.frame = CGRectMake(0, 45, SCREENSIZE.width, 1);
-        [actionSheetView addSubview: line];
         
         // 往下半部分视图上添加按钮
         if(destroyTitle) {
+            destroyButtonTitle = destroyTitle;
             // 有毁灭性按钮
             if(others == nil || others.count == 0) {
                 // 没有其他按钮
@@ -103,6 +122,7 @@
                 [actionSheetBottomView addSubview: btnDestroy];
             } else {
                 // 有其他按钮，先加载其他按钮
+                [titlesArray addObjectsFromArray: others];
                 for(NSInteger i = 0;i < others.count;i++) {
                     UIButton *btnNormal = [UIButton buttonWithType: UIButtonTypeCustom];
                     [btnNormal setBackgroundImage: [UIImage imageNamed: @"btn_menu_grey_n.png"] forState: UIControlStateNormal];
@@ -133,6 +153,7 @@
                 // 没有其他按钮
             } else {
                 // 有其他按钮，先加载其他按钮
+                [titlesArray addObjectsFromArray: others];
                 for(NSInteger i = 0;i < others.count;i++) {
                     UIButton *btnNormal = [UIButton buttonWithType: UIButtonTypeCustom];
                     [btnNormal setBackgroundImage: [UIImage imageNamed: @"btn_menu_grey_n.png"] forState: UIControlStateNormal];
@@ -185,13 +206,26 @@
     [self hide];
     
     if(btn.tag == kDestroyButtonTag) {
-        if([_delegate respondsToSelector: @selector(actionSheet:buttonClickedAtIndex:)]) {
-            [_delegate actionSheet: self buttonClickedAtIndex: _destructiveButtonIndex];
+        if([_delegate respondsToSelector: @selector(actionSheet:clickedButtonAtIndex:)]) {
+            [_delegate actionSheet: self clickedButtonAtIndex: _destructiveButtonIndex];
         }
     } else if(btn.tag >= kNormalButtonTag) {
-        if([_delegate respondsToSelector: @selector(actionSheet:buttonClickedAtIndex:)]) {
-            [_delegate actionSheet: self buttonClickedAtIndex: btn.tag - kNormalButtonTag];
+        if([_delegate respondsToSelector: @selector(actionSheet:clickedButtonAtIndex:)]) {
+            [_delegate actionSheet: self clickedButtonAtIndex: btn.tag - kNormalButtonTag];
         }
+    }
+}
+
+- (NSString *)buttonTitleAtIndex:(NSInteger)index
+{
+    if(index == _destructiveButtonIndex) {
+        if(destroyButtonTitle == nil || [destroyButtonTitle isEqual: @""]) {
+            return nil;
+        }
+        return destroyButtonTitle;
+    } else {
+        if(index > titlesArray.count) return nil;
+        return titlesArray[index];
     }
 }
 
