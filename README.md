@@ -9,19 +9,21 @@ Drag file `LRActionSheet` folder to your project(suppot images are in `Supportin
 
 Usage
 ==============
-LRActionSheet *actionSheet = [[LRActionSheet alloc] initWithTitle: @"title" destroyButtonTitle: @"destructive Button" otherButtonTitles: nil];
-actionSheet.delegate = self;
-[actionSheet show];
+###
+    LRActionSheet *actionSheet = [[LRActionSheet alloc] initWithTitle: @"title" destroyButtonTitle: @"destructive Button" otherButtonTitles: nil];
+    actionSheet.delegate = self;
+    [actionSheet show];
 
-# LRActionSheet Delegate
-- (void)actionSheet:(LRActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)index
-{
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle: nil message: [actionSheet buttonTitleAtIndex: index] preferredStyle: UIAlertControllerStyleAlert];
-    UIAlertAction *action = [UIAlertAction actionWithTitle: @"确定" style: UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+LRActionSheet Delegate
+###
+    - (void)actionSheet:(LRActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)index
+    {
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle: nil message: [actionSheet buttonTitleAtIndex: index] preferredStyle: UIAlertControllerStyleAlert];
+        UIAlertAction *action = [UIAlertAction actionWithTitle: @"确定" style: UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
 
-    }];
-    [alertController addAction: action];
-    [self presentViewController: alertController animated: YES completion:^{
+        }];
+        [alertController addAction: action];
+        [self presentViewController: alertController animated: YES completion:^{
 
-    }];
-}
+        }];
+    }
