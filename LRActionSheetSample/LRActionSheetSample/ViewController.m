@@ -9,7 +9,7 @@
 #import "ViewController.h"
 #import "LRActionSheet/LRActionSheet.h"
 
-@interface ViewController ()<LRActionSheetDelegate, UIActionSheetDelegate>
+@interface ViewController ()<LRActionSheetDelegate>
 
 @end
 
