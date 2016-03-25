@@ -206,12 +206,12 @@
     [self hide];
     
     if(btn.tag == kDestroyButtonTag) {
-        if([_delegate respondsToSelector: @selector(actionSheet:clickedButtonAtIndex:)]) {
-            [_delegate actionSheet: self clickedButtonAtIndex: _destructiveButtonIndex];
+        if([_delegate respondsToSelector: @selector(LRActionSheet:clickedButtonAtIndex:)]) {
+            [_delegate LRActionSheet: self clickedButtonAtIndex: _destructiveButtonIndex];
         }
     } else if(btn.tag >= kNormalButtonTag) {
-        if([_delegate respondsToSelector: @selector(actionSheet:clickedButtonAtIndex:)]) {
-            [_delegate actionSheet: self clickedButtonAtIndex: btn.tag - kNormalButtonTag];
+        if([_delegate respondsToSelector: @selector(LRActionSheet:clickedButtonAtIndex:)]) {
+            [_delegate LRActionSheet: self clickedButtonAtIndex: btn.tag - kNormalButtonTag];
         }
     }
 }

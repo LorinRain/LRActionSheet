@@ -9,7 +9,7 @@
 #import "ViewController.h"
 #import "LRActionSheet/LRActionSheet.h"
 
-@interface ViewController ()<LRActionSheetDelegate>
+@interface ViewController ()<LRActionSheetDelegate, UIActionSheetDelegate>
 
 @end
 
@@ -45,7 +45,7 @@
 }
 
 #pragma mark - LRActionSheet Delegate
-- (void)actionSheet:(LRActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)index
+- (void)LRActionSheet:(LRActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)index
 {
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle: nil message: [actionSheet buttonTitleAtIndex: index] preferredStyle: UIAlertControllerStyleAlert];
     UIAlertAction *action = [UIAlertAction actionWithTitle: @"确定" style: UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {

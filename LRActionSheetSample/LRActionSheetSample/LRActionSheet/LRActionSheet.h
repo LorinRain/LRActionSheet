@@ -17,7 +17,7 @@
  * @brief 按钮点击事件
  * 按钮点击的时候，提示框自动消失
  */
-- (void)actionSheet:(nonnull LRActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)index;
+- (void)LRActionSheet:(nonnull LRActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)index;
 
 @end
 
