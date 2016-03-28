@@ -16,7 +16,7 @@ Usage
 
 LRActionSheet Delegate
 ###
-    - (void)actionSheet:(LRActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)index
+    - (void)LRActionSheet:(LRActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)index
     {
         // Do Something here
     }
