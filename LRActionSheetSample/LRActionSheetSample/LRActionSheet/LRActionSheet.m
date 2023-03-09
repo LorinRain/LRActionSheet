@@ -8,12 +8,22 @@
 
 #import "LRActionSheet.h"
 
-#define SCREENSIZE [UIScreen mainScreen].bounds.size
+#define LR_SCREENSIZE [UIScreen mainScreen].bounds.size
 #define RGBCOLOR(r, g, b) [UIColor colorWithRed: r/255.f green: g/255.f blue: b/255.f alpha: 1]
-#define BUTTONMAGIN 10   // 按钮间距
+
+#define LR_iPhoneX \
+({BOOL iPhoneXFlag = NO; \
+if (@available(iOS 11.0, *)) { \
+    iPhoneXFlag = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom > 0; \
+} \
+(iPhoneXFlag);})
+#define LR_kStatusBarHeight (LR_iPhoneX ? 44.f : 20.f)
+#define LR_kTabbarSafeBottomMargin (LR_iPhoneX ? 34.f : 0.f)
 
 #define kDestroyButtonTag 1001
 #define kNormalButtonTag 2002
+
+#define BUTTONMAGIN 10   // 按钮间距
 
 @implementation LRActionSheet
 {
@@ -64,7 +74,7 @@
         // 弹出框上面添加两部分view
         if(title != nil && ![title isEqual: @""]) {
             actionSheetTopView = [[UIView alloc] init];
-            actionSheetTopView.frame = CGRectMake(0, 0, SCREENSIZE.width, 45);
+            actionSheetTopView.frame = CGRectMake(0, 0, LR_SCREENSIZE.width, 45);
             [actionSheetView addSubview: actionSheetTopView];
             
             // 往上半部分视图上添加标题和取消按钮
@@ -95,13 +105,13 @@
             // 添加上下分割线
             UIImageView *line = [[UIImageView alloc] init];
             line.backgroundColor = RGBCOLOR(211, 211, 211);
-            line.frame = CGRectMake(0, 45, SCREENSIZE.width, 1);
+            line.frame = CGRectMake(0, 45, LR_SCREENSIZE.width, 1);
             [actionSheetView addSubview: line];
         }
         
         actionSheetBottomView = [[UIView alloc] init];
         CGFloat height = destroyTitle?(others.count+1)*45+(others.count)*BUTTONMAGIN+BUTTONMAGIN*2:others.count*45+(others.count-1)*BUTTONMAGIN+BUTTONMAGIN*2;
-        actionSheetBottomView.frame = CGRectMake(0, actionSheetTopView==nil?0:46, SCREENSIZE.width, height);
+        actionSheetBottomView.frame = CGRectMake(0, actionSheetTopView==nil?0:46, LR_SCREENSIZE.width, height);
         [actionSheetView addSubview: actionSheetBottomView];
         
         // 往下半部分视图上添加按钮
@@ -112,7 +122,7 @@
                 // 没有其他按钮
                 UIButton *btnDestroy = [UIButton buttonWithType: UIButtonTypeCustom];
                 [btnDestroy setBackgroundImage: [UIImage imageNamed: @"btn_menu_red_n.png"] forState: UIControlStateNormal];
-                btnDestroy.frame = CGRectMake(20, BUTTONMAGIN, SCREENSIZE.width-20*2, 45);
+                btnDestroy.frame = CGRectMake(20, BUTTONMAGIN, LR_SCREENSIZE.width-20*2, 45);
                 [btnDestroy setTitle: destroyTitle forState: UIControlStateNormal];
                 btnDestroy.titleLabel.font = [UIFont systemFontOfSize: 15];
                 [btnDestroy addTarget: self action: @selector(buttonAction:) forControlEvents: UIControlEventTouchUpInside];
@@ -126,7 +136,7 @@
                 for(NSInteger i = 0;i < others.count;i++) {
                     UIButton *btnNormal = [UIButton buttonWithType: UIButtonTypeCustom];
                     [btnNormal setBackgroundImage: [UIImage imageNamed: @"btn_menu_grey_n.png"] forState: UIControlStateNormal];
-                    btnNormal.frame = CGRectMake(20, BUTTONMAGIN*(i+1)+45*i, SCREENSIZE.width-20*2, 45);
+                    btnNormal.frame = CGRectMake(20, BUTTONMAGIN*(i+1)+45*i, LR_SCREENSIZE.width-20*2, 45);
                     [btnNormal setTitle: others[i] forState: UIControlStateNormal];
                     btnNormal.titleLabel.font = [UIFont systemFontOfSize: 15];
                     [btnNormal addTarget: self action: @selector(buttonAction:) forControlEvents: UIControlEventTouchUpInside];
@@ -138,7 +148,7 @@
                 // 然后加载毁灭性按钮
                 UIButton *btnDestroy = [UIButton buttonWithType: UIButtonTypeCustom];
                 [btnDestroy setBackgroundImage: [UIImage imageNamed: @"btn_menu_red_n.png"] forState: UIControlStateNormal];
-                btnDestroy.frame = CGRectMake(20, BUTTONMAGIN*(others.count+1)+45*others.count, SCREENSIZE.width-20*2, 45);
+                btnDestroy.frame = CGRectMake(20, BUTTONMAGIN*(others.count+1)+45*others.count, LR_SCREENSIZE.width-20*2, 45);
                 [btnDestroy setTitle: destroyTitle forState: UIControlStateNormal];
                 btnDestroy.titleLabel.font = [UIFont systemFontOfSize: 15];
                 [btnDestroy addTarget: self action: @selector(buttonAction:) forControlEvents: UIControlEventTouchUpInside];
@@ -157,7 +167,7 @@
                 for(NSInteger i = 0;i < others.count;i++) {
                     UIButton *btnNormal = [UIButton buttonWithType: UIButtonTypeCustom];
                     [btnNormal setBackgroundImage: [UIImage imageNamed: @"btn_menu_grey_n.png"] forState: UIControlStateNormal];
-                    btnNormal.frame = CGRectMake(20, BUTTONMAGIN*(i+1)+45*i, SCREENSIZE.width-20*2, 45);
+                    btnNormal.frame = CGRectMake(20, BUTTONMAGIN*(i+1)+45*i, LR_SCREENSIZE.width-20*2, 45);
                     [btnNormal setTitle: others[i] forState: UIControlStateNormal];
                     btnNormal.titleLabel.font = [UIFont systemFontOfSize: 15];
                     [btnNormal addTarget: self action: @selector(buttonAction:) forControlEvents: UIControlEventTouchUpInside];
@@ -179,8 +189,8 @@
 - (void)show
 {
     UIView *window = [UIApplication sharedApplication].keyWindow;
-    self.frame = CGRectMake(0, 0, SCREENSIZE.width, SCREENSIZE.height);
-    CGFloat actionSheetHeight = actionSheetTopView.frame.size.height + actionSheetBottomView.frame.size.height;
+    self.frame = CGRectMake(0, 0, LR_SCREENSIZE.width, LR_SCREENSIZE.height);
+    CGFloat actionSheetHeight = actionSheetTopView.frame.size.height + actionSheetBottomView.frame.size.height + LR_kTabbarSafeBottomMargin;
     actionSheetView.frame = CGRectMake(0, self.frame.size.height - actionSheetHeight, self.frame.size.width, actionSheetHeight);
     [window addSubview: self];
 }
